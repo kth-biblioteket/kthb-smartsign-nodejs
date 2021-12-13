@@ -240,8 +240,8 @@
                                     </div>
                                     <%eventfields.forEach(field=> { %>
                                         <div class="form-check">
-                                            <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="title<%=frameindex%>">
-                                            <label class="form-check-label" for="title<%=frameindex%>"><%=field.name%></label>
+                                            <input onclick="updateEvent('<%=event.id%>', '<%=field.id%>', 'frame_<%=frameindex%>', this)" <%-field.events_id ? "checked" : "" %> type="checkbox" class="form-check-input" id="<%=field.name%><%=frameindex%>">
+                                            <label class="form-check-label" for="<%=field.name%><%=frameindex%>"><%=field.name%></label>
                                         </div>
                                     <%}) %>
                                         <div style="padding-top:10px">
