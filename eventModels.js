@@ -143,44 +143,44 @@ const readEventId = (id) => {
 };
 
 //Skapa ett event
-const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published) => {
+const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang) => {
     return new Promise(function (resolve, reject) {
 
-        const sql = `INSERT INTO events(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published)
-                VALUES(?, ?, ?, ?, ?, ?, ?)`;
-        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published]), async function(err, result) {
+        const sql = `INSERT INTO events(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
+        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang]), async function(err, result) {
             if(err) {
                 console.error(err);
                 reject(err.message)
-            }
-            //Lägg till fält
-            //Skriv om detta!!
-            if(result.insertId != 0) {
-                console.log("Event skapat: " + result.insertId)
-                await createEventField(result.insertId, 1)
-                await createEventField(result.insertId, 2)
-                await createEventField(result.insertId, 3)
-                await createEventField(result.insertId, 4)
-                await createEventField(result.insertId, 5)
-                await createEventField(result.insertId, 6)
-                await createEventField(result.insertId, 7)
-                await createEventField(result.insertId, 8)
-            }
+            } else {
+                //Lägg till fält
+                //Skriv om detta!!
+                if(result.insertId != 0) {
+                    await createEventField(result.insertId, 1)
+                    await createEventField(result.insertId, 2)
+                    await createEventField(result.insertId, 3)
+                    await createEventField(result.insertId, 4)
+                    await createEventField(result.insertId, 5)
+                    await createEventField(result.insertId, 6)
+                    await createEventField(result.insertId, 7)
+                    await createEventField(result.insertId, 8)
+                }
 
-            const successMessage = "The event was entered successfully."
-            resolve(result.insertId);
+                const successMessage = "The event was entered successfully."
+                resolve(result.insertId);
+            }
         });
     })
 };
 
 //Uppdatera ett event
-const updateEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, id) => {
+const updateEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang, id) => {
     return new Promise(function (resolve, reject) {
 
         const sql = `UPDATE events 
-                SET guid = ?, contentid = ?, eventtime = ?, pubstarttime = ?, pubendtime = ?, smartsignlink = ?, published = ? 
+                SET guid = ?, contentid = ?, eventtime = ?, pubstarttime = ?, pubendtime = ?, smartsignlink = ?, published = ?, lang= ? 
                 WHERE id = ?`;
-        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, id]),(err, result) => {
+        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang, id]),(err, result) => {
             if(err) {
                 console.error(err);
                 reject(err.message)
@@ -232,6 +232,22 @@ const deleteEvent = (guid) => {
             }
         });
         */
+    })
+};
+
+const updateEventLang = (lang, id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `UPDATE events 
+                SET lang= ? 
+                WHERE id = ?`;
+        database.db.query(database.mysql.format(sql,[lang, id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The event was successfully updated."
+            resolve(successMessage);
+        });
     })
 };
 
@@ -484,6 +500,7 @@ module.exports = {
     createEvent,
     updateEvent,
     deleteEvent,
+    updateEventLang,
     updateEventPublish,
     readEventFields,
     createEventField,

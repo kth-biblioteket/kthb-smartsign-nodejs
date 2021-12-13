@@ -128,7 +128,7 @@
     <div>
         <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
             <a class="navbar-brand" href="/">
-                <img alt="" src="https://apps-ref.lib.kth.se/polopoly/KTH_Logotyp.svg" width="75" height="75"
+                <img alt="" src="https://apps.lib.kth.se/polopoly/KTH_Logotyp.svg" width="75" height="75"
                     class="d-inline-block align-top"> KTH Bibliotekets Kalender Smartsign
             </a>
             <button aria-controls="basic-navbar-nav" type="button" aria-label="Toggle navigation"
@@ -181,18 +181,24 @@
                     <%if(event.published==1) { published=true } else { published=false } %>
                     <div class="card" style="margin-bottom:10px">
                         <div class="card-body" style="display:flex;flex-direction:row;padding-bottom:40px">
-                            <div style="flex:3">
+                            <div style="flex:3;padding-right:10px">
                                 <a href="<%= event.guid%>">
-                                    <%= event_.feeditem.title %>
+                                    <%-event.lang=='sv' ? event_.feeditem_sv.title : event_.feeditem_sv.title %>
                                 </a>
                                 <div>
-                                    <%- event_.feeditem.content %>
+                                    <%-event.lang=='sv' ? event_.feeditem_sv.content : event_.feeditem.content %>
                                 </div>
-                                <div style="display:flex">
-                                    <button id="pdfbtn" onclick="getPdf('<%=event.id%>', this);" type="button"
+                                <div style="display:flex;padding-top:10px">
+                                    <button id="pdfbtn_screen" onclick="getPdf('<%=event.id%>', this, 'Skärm');" type="button"
                                         class="btn btn-primary" style="margin-right:10px">
-                                        Ladda ner PDF
+                                        Ladda ner PDF skärm
                                     </button>
+                                    <button id="pdfbtn_a4" onclick="getPdf('<%=event.id%>', this, 'A4');" type="button"
+                                        class="btn btn-primary" style="margin-right:10px">
+                                        Ladda ner PDF A4
+                                    </button>
+                                </div>
+                                <div style="display:flex;padding-top:10px">
                                     <button id="qrcodebtn_<%=event.id%>"
                                         onclick="getQrCode('<%=event.id%>', 'qrcodeimage_<%=event.id%>', this);"
                                         type="button" class="btn btn-primary" style="margin-right:10px">
@@ -215,6 +221,20 @@
                                         <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault">
                                         <label class="form-check-label" for="flexSwitchCheckDefault">Publicera</label>
                                     </div>
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio" id="flexRadioEnglish">
+                                        <label class="form-check-label" for="flexRadioEnglish">
+                                            Engelska
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" <%-event.lang == "sv" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'sv', 'frame_<%=frameindex%>');" type="radio" name="flexRadio" id="flexRadioSwedish">
+                                        <label class="form-check-label" for="flexRadioSwedish">
+                                            Svenska
+                                        </label>
+                                    </div>
+
                                     <div style="padding-top:10px">
                                         Fält som ska visas
                                     </div>
@@ -372,6 +392,21 @@
             
             }
 
+            function updateLang(events_id, lang, frameid) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    document.getElementById(frameid).src = document.getElementById(frameid).src
+                };
+                xhttp.open("PUT", "/smartsign/api/v1/calendar/eventlang/" + events_id, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "lang": lang
+                }));
+            }
+
             function publishEvent(events_id, cb, frameid) {
                 checkjwt()
                 var xhttp = new XMLHttpRequest();
@@ -448,7 +483,7 @@
                 xhttp.send();
             }
 
-            function getPdf(id, cb) {
+            function getPdf(id, cb, type) {
                 $(cb).prop("disabled", true);
                 $(cb).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Skapar pdf...');
 
@@ -463,11 +498,11 @@
                     link.download = "smartsign" + new Date() + ".pdf";
                     link.click();
                     $(cb).prop("disabled", false);
-                    $(cb).html('Ladda ner pdf');
+                    $(cb).html('Ladda ner pdf ' + type);
 
 
                 };
-                xhttp.open("GET", "/smartsign/api/v1/calendar/pdf?id=" + id, true);
+                xhttp.open("GET", "/smartsign/api/v1/calendar/pdf/" + id + "?type=" + type, true);
                 xhttp.responseType = "blob";
                 xhttp.setRequestHeader('Content-Type', 'application/json');
                 xhttp.send();

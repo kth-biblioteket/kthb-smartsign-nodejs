@@ -51,165 +51,9 @@ apiRoutes.post("/logout", VerifyToken, eventController.logout)
 
 apiRoutes.get("/admin", VerifyToken, eventController.readEventsPaginated)
 
-apiRoutes.get("/calendar/events", eventController.readEventsPaginated)
+apiRoutes.get("/calendar/published/slideshow", eventController.slideshow) 
 
-apiRoutes.get("/calendar/published/slideshow", async function (req, res, next) {
-    try {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.write(`
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-                <title>KTH Library Calendar</title>
-                <link rel="shortcut icon" href="favicon.ico">
-                <link rel="stylesheet" href="https://apps.lib.kth.se/smartsign/css/bootstrap.min.css">
-                <link rel="stylesheet" href="https://apps.lib.kth.se/smartsign/css/smartsign.css?ver=1.10">
-                <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
-            </head>
-            <style>
-                body {
-                    height: 1900px;
-                    width: 1080px;
-                    overflow: hidden;
-                }
-                .mySlides {display:none;}
-                .fadeinKTHB
-                {
-                    animation: fadeInAnimation ease 3s;
-                    animation-iteration-count: 1;
-                    animation-fill-mode: forwards;
-                }
-                
-                @keyframes fadeInAnimation {
-                    0% {
-                        opacity: 0;
-                    }
-                    100% {
-                        opacity: 1;
-                    }
-                }
-            </style>
-            <body>
-                <div id="slides">`)
-
-        //Läs in alla sidor som är publicerade som html i publishedevents     
-        const filenames = fs.readdirSync(path.join(__dirname, "/publishedevents/html"))
-        let htmlfiles = filenames.filter( file => file.match(new RegExp(`.*\.(html)`, 'ig')));
-        htmlfiles.forEach(file => {
-            const content = fs.readFileSync(path.join(__dirname, "/publishedevents/html/" + file))
-            res.write('<div class="mySlides fadeinKTHB" style="display: block;">')
-            res.write('<div class="App" style="position:relative">')
-            res.write(content.toString());
-            res.write('</div>')
-            res.write('</div>');
-        });
-        res.write(`
-                </div>
-                <script>
-                var slideIndex = 0;
-                carousel();
-
-                function carousel() {
-                var i;
-                var x = document.getElementsByClassName("mySlides");
-                for (i = 0; i < x.length; i++) {
-                    x[i].style.display = "none"; 
-                }
-                slideIndex++;
-                if (slideIndex > x.length) {slideIndex = 1} 
-                x[slideIndex-1].style.display = "block"; 
-                setTimeout(carousel, 10000); 
-                }
-                </script>
-            </body>
-            </html>`)
-        res.end();
-    }
-    catch (err) {
-        console.log(err)
-    }
-
-});
-
-apiRoutes.get("/calendar/published/slideshowimages", async function (req, res, next) {
-    try {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-
-        res.write(`
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <meta charset="utf-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-                <title>KTH Library Calendar</title>
-                <link rel="shortcut icon" href="favicon.ico">
-                <link rel="stylesheet" href="https://apps.lib.kth.se/smartsign/css/bootstrap.min.css">
-                <link rel="stylesheet" href="https://apps.lib.kth.se/smartsign/css/smartsign.css?ver=1.10">
-                <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans">
-            </head>
-            <style>
-                body {
-                    height: 1900px;
-                    width: 1080px;
-                    overflow: hidden;
-                }
-                .mySlides {display:none;}
-                .fadeinKTHB
-                {
-                    animation: fadeInAnimation ease 3s;
-                    animation-iteration-count: 1;
-                    animation-fill-mode: forwards;
-                }
-                
-                @keyframes fadeInAnimation {
-                    0% {
-                        opacity: 0;
-                    }
-                    100% {
-                        opacity: 1;
-                    }
-                }
-            </style>
-            <body>
-                <div id="slides">`)
-        //Läs in alla sidor som är publicerade som bilder(jpg's) i publishedevents     
-        const filenames = fs.readdirSync(path.join(__dirname, "/publishedevents/images"))
-        let jpgfiles = filenames.filter( file => file.match(new RegExp(`.*\.(jpg)`, 'ig')));
-        jpgfiles.forEach(file => {
-
-            const content = fs.readFileSync(path.join(__dirname, "/publishedevents/images/" + file))
-            res.write('<div class="mySlides fadeinKTHB" style="display: block;"><img src="data:image/jpeg;base64,')
-            res.write(Buffer.from(content).toString('base64'));
-            res.write('"/></div>');
-        });
-        res.write(`
-                </div>
-                <script>
-                var slideIndex = 0;
-                carousel();
-
-                function carousel() {
-                var i;
-                var x = document.getElementsByClassName("mySlides");
-                for (i = 0; i < x.length; i++) {
-                    x[i].style.display = "none"; 
-                }
-                slideIndex++;
-                if (slideIndex > x.length) {slideIndex = 1} 
-                x[slideIndex-1].style.display = "block"; 
-                setTimeout(carousel, 10000); 
-                }
-                </script>
-            </body>
-            </html>`)
-        res.end();
-    }
-    catch (err) {
-        console.log(err)
-    }
-});
+apiRoutes.get("/calendar/published/slideshowimages", eventController.slideshowimages)
 
 apiRoutes.post("/calendar/event", VerifyToken, async function (req, res, next) {
     try {
@@ -240,6 +84,8 @@ apiRoutes.delete("/calendar/event", VerifyToken, async function (req, res, next)
         res.send(err.message)
     } 
 });
+
+apiRoutes.put("/calendar/eventlang/:id", VerifyToken, eventController.updateEventLang)
 
 apiRoutes.post("/calendar/event/publish", VerifyToken, async function (req, res, next) {
     try {
@@ -314,15 +160,10 @@ apiRoutes.get("/calendar/event/qrcode/:id", async function (req, res, next) {
     }
 });
 
-apiRoutes.get("/calendar/pdf", async function (req, res, next) {
+apiRoutes.get("/calendar/pdf/:id", async function (req, res, next) {
     try {
-        if (req.query.id) {
-            let pdf = await eventController.generatePdfPage(req.query.id, 0);
-            res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
-            res.send(pdf)
-        }
-        if (req.body.id) {
-            let pdf = await eventController.generatePdfPage(req.body.id, 0);
+        if (req.params.id) {
+            let pdf = await eventController.generatePdfPage(req.params.id, req.query.type);
             res.set({ 'Content-Type': 'application/pdf', 'Content-Length': pdf.length })
             res.send(pdf)
         }

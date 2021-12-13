@@ -17,6 +17,7 @@ CREATE TABLE events (
     pubendtime DATETIME NOT NULL,
     smartsignlink VARCHAR(200) NOT NULL,
     published TINYINT(1) NOT NULL,
+    lang VARCHAR(10) NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT constraint_guid UNIQUE (contentid)
 );
