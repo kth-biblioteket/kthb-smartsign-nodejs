@@ -4,7 +4,8 @@ const database = require('./db');
 const readEvents = () => {
     return new Promise(function (resolve, reject) {
         const sql = `SELECT * FROM events
-                    WHERE eventtime > now()`;
+                    WHERE eventtime > now()
+                    ORDER BY eventtime`;
         database.db.query(database.mysql.format(sql,[]),(err, result) => {
             if(err) {
                 console.error(err);
@@ -33,6 +34,7 @@ const readEventsPaginated = (page, limit) => {
         let offset = (limit * page) - limit;
         const sql = `SELECT * FROM events
                     WHERE eventtime > now()
+                    ORDER BY eventtime
                     LIMIT ? OFFSET ?`;
         database.db.query(database.mysql.format(sql,[limit, offset]),(err, result) => {
             if(err) {
@@ -48,7 +50,8 @@ const readEventsPaginated = (page, limit) => {
 const readAllPublished = () => {
     return new Promise(function (resolve, reject) {
         const sql = `SELECT * FROM events 
-                    WHERE published = 1 AND eventtime > now()`;
+                    WHERE published = 1 AND eventtime > now()
+                    ORDER BY eventtime`;
         database.db.query(database.mysql.format(sql,[]),(err, result) => {
             if(err) {
                 console.error(err);
