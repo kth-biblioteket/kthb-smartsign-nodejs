@@ -218,19 +218,19 @@
                             <div style="flex:2">
                                 <form>
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault">Publicera</label>
+                                        <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Publicera</label>
                                     </div>
 
                                     <div class="form-check">
-                                        <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio" id="flexRadioEnglish">
-                                        <label class="form-check-label" for="flexRadioEnglish">
+                                        <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
+                                        <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
                                             Engelska
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" <%-event.lang == "sv" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'sv', 'frame_<%=frameindex%>');" type="radio" name="flexRadio" id="flexRadioSwedish">
-                                        <label class="form-check-label" for="flexRadioSwedish">
+                                        <input class="form-check-input" <%-event.lang == "sv" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'sv', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioSwedish<%=frameindex%>">
+                                        <label class="form-check-label" for="flexRadioSwedish<%=frameindex%>">
                                             Svenska
                                         </label>
                                     </div>
