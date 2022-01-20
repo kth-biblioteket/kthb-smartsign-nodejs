@@ -103,16 +103,18 @@ async function readEventsPaginated(req, res, next) {
         for(i = 0 ; i < events.length ; i++) {
             feeditem = feed.items.filter(item => '1.' + item.guid.split('-1.')[1] == events[i].contentid)
             feeditem_sv = feed_sv.items.filter(item => '1.' + item.guid.split('-1.')[1] == events[i].contentid)
-            eventsarray[i] = {}
-            eventsarray[i].feeditem = feeditem[0]
-            eventsarray[i].feeditem_sv = feeditem_sv[0]
-            eventsarray[i].event = events[i];
-            eventsarray[i].eventfields = await eventModel.readEventFields(events[i].id)
-            eventsarray[i].eventimage = await eventModel.readEventImage(events[i].id)
+            //existerar eventet i kalendern?
+            if(feeditem.length > 0) {
+                eventsarray[i] = {}
+                eventsarray[i].feeditem = feeditem[0]
+                eventsarray[i].feeditem_sv = feeditem_sv[0]
+                eventsarray[i].event = events[i];
+                eventsarray[i].eventfields = await eventModel.readEventFields(events[i].id)
+                eventsarray[i].eventimage = await eventModel.readEventImage(events[i].id)
+            }
         }
-
-        data.events = eventsarray
-
+        //filtrera bort tomma poster
+        data.events = eventsarray.filter((a) => a);
         admindata = {
             "url": req.protocol + '://' + req.get('host') + req.originalUrl,
             "pagination": data.pagination,
