@@ -10,7 +10,8 @@ function verifyToken(req, res, next) {
         || req.cookies.jwt
 
     if (!token)
-        return res.status(403).send({ auth: false, message: 'No token provided.' });
+        return res.render('login')
+        //return res.status(403).send({ auth: false, message: 'No token provided.' });
 
     if (req.headers['x-access-token'] || req.cookies.jwt) {
         jwt.verify(token, process.env.SECRET, function (err, decoded) {
