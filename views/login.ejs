@@ -29,6 +29,7 @@
             <input class="form-control" type="password" id="password" name="password" placeholder="Ange lösenord" />
             <button type="button" class="btn btn-primary" type="submit" onclick="loginUser()">Submit</button>
         </form>
+        <div id="errormessage"></div>
     </div>
     <script>
         function loginUser() {
@@ -44,6 +45,8 @@
                 if (this.readyState == 4 && this.status == 200) {
                     sessionStorage.setItem("token", JSON.parse(this.responseText).token);
                     location.href = "/smartsign/api/v1/admin"
+                } else {
+                    document.getElementById("errormessage").innerHTML = "Wrong credentials!";
                 }
             };
             xhttp.open("POST", "/smartsign/api/v1/login");
