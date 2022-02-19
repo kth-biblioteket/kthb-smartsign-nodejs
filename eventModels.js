@@ -492,6 +492,38 @@ const deleteImage = (id) => {
     })
 };
 
+//Hämta qrcodetracking statistik
+const readQrcodetracking = (id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT events_id, url, count(*) as nrofscans FROM qrcodetracking 
+                    GROUP BY events_id, url
+                    ORDER BY nrofscans DESC`;
+        database.db.query(database.mysql.format(sql),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Lägg till qrcodetracking
+const createQrcodetracking = (events_id, url, browser) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `INSERT INTO qrcodetracking(events_id, url, browser)
+                VALUES(?, ?, ?)`;
+        database.db.query(database.mysql.format(sql,[events_id, url, browser]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The qrcodetracking was saved"
+            resolve(successMessage);
+        });
+    })
+};
+
 
 module.exports = {
     readEvents,
@@ -515,5 +547,7 @@ module.exports = {
     readImage,
     createImage,
     updateImage,
-    deleteImage
+    deleteImage,
+    readQrcodetracking,
+    createQrcodetracking
 };

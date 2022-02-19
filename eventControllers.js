@@ -352,9 +352,9 @@ async function readEventContentid(contentid) {
     }
 }
 
-async function readEventId(guid) {
+async function readEventId(id) {
     try {
-        let result = await eventModel.readEventId(guid)
+        let result = await eventModel.readEventId(id)
         return result
     } catch (err) {
         console.log(err.message)
@@ -517,6 +517,26 @@ async function deleteImage(id) {
         let result = await eventModel.deleteImage(id)
         //Ta bort bildfilen
         fs.unlinkSync(image[0].fullpath);
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function readQrcodetracking(id) {
+    try {
+        result = await eventModel.readQrcodetracking(id)
+        return result;
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createQrcodetracking(events_id, url, browser) {
+    try {
+        let result = await eventModel.createQrcodetracking(events_id, url, browser)
         return result
     } catch (err) {
         console.log(err.message)
@@ -739,7 +759,8 @@ async function generateQrCode(id) {
         QRCode.toCanvas(
 
             canvas,
-            event.guid,
+            //event.guid,
+            process.env.QRCODELINK + event.id,
             {
                 width: 500,
                 height: 500,
@@ -905,6 +926,8 @@ module.exports = {
     createImage,
     updateImage,
     deleteImage,
+    readQrcodetracking,
+    createQrcodetracking,
     generateCalendarPage,
     generatePublishedPages,
     generateQrCode,

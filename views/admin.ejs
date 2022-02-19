@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
@@ -15,6 +16,8 @@
     <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"
         integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap5.min.js"></script>
     <style>
         body {
             margin: 0 auto;
@@ -140,8 +143,13 @@
                     </div>
                 </div>
 
-                <form style="flex:2;display:flex;justify-content:flex-end"><button type="button"
-                        class="btn btn-outline-success" onclick="logout()">Logout</button></form>
+                <form style="flex:2;display:flex;justify-content:flex-end">
+                    <button style="margin-right:10px" type="button" onclick="getQrtracking()" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#qrcodetrackingModal">
+                                Statistik
+                    </button>
+                    <button type="button" class="btn btn-outline-success" onclick="logout()">Logout</button>
+                </form>
             </div>
             <div id="gradientBorder"></div>
             <ul class="pagination">
@@ -375,6 +383,20 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="qrcodetrackingModal" tabindex="-1" aria-labelledby="qrcodetrackingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="qrcodetrackingModalLabel">Statistik scannade QR-koder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="QRmodal-body modal-body">
+                    </div>
+                    <div class="QRmodal-footer modal-footer">
                     </div>
                 </div>
             </div>
@@ -652,6 +674,22 @@
                     getImages()
                 };
                 xhttp.open("DELETE", "/smartsign/api/v1/calendar/images/" + id, true);
+                xhttp.send();
+            }
+
+            function getQrtracking() {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    $('.QRmodal-body').html(xhttp.response)
+                    $('#qrtrackingtable').DataTable({
+                        "dom": '<plfi<t>>',
+                        "order": [[ 2, 'desc' ]]
+                        });
+                };
+                xhttp.open("GET", "/smartsign/api/v1/qrcodetracking", true);
                 xhttp.send();
             }
 

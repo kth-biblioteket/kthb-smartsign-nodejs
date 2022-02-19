@@ -27,7 +27,7 @@ CREATE TABLE fields (
     type VARCHAR(20) NOT NULL UNIQUE,
     name VARCHAR(30) NOT NULL,
     description VARCHAR(200) NULL,
-    CONSTRAINT constraint_tyoe UNIQUE (type)
+    CONSTRAINT constraint_type UNIQUE (type)
 );
 
 CREATE TABLE eventfields (
@@ -50,6 +50,14 @@ CREATE TABLE eventimage (
     events_id INT(6) NOT NULL,
     images_id INT(6) NOT NULL,
     CONSTRAINT constraint_fields UNIQUE (events_id)
+);
+
+CREATE TABLE qrcodetracking (
+    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    events_id int(6) NOT NULL,
+    url VARCHAR(200) NOT NULL,
+    browser VARCHAR(500) NOT NULL,
+    scantime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 ## SQLite

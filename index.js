@@ -271,6 +271,70 @@ apiRoutes.post("/calendar/uploadfile", async function (req, res) {
     }
 });
 
+apiRoutes.get("/qrcode/:eventid", async function (req, res) {
+    try {
+        if (req.params.eventid) {
+            //Hämta event
+            let event = await eventController.readEventId(req.params.eventid)
+
+            //Spara info
+            eventController.createQrcodetracking(req.params.eventid, event[0].guid, req.headers["user-agent"]);
+
+            //Skicka vidare
+            res.redirect(event[0].guid);
+        }
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+apiRoutes.get("/qrcodetracking", async function (req, res) {
+    try {
+        res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="qrtrackingstats">`)
+
+        //Hämta qrtrackingstatistik
+        let qrtracking = await eventController.readQrcodetracking()  
+        let url = "https://www.kth.se/biblioteket/"
+        let html = `<div style="margin-bottom:10px" class="card">
+                        <div class="card-body">
+                            <table id="qrtrackingtable" class="table table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Eventid</th>
+                                        <th>Url</th>
+                                        <th>Nr of Scans</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`
+                                qrtracking.forEach(row => {
+                                //for(let i=0 ; i < 25 ; i++) {
+                                    html += 
+                                    `<tr>
+                                        <td>${row.events_id}</td>
+                                        <td>${row.url}</td>
+                                        <td>${row.nrofscans}</td>
+                                    </tr>`
+                                });
+                                html +=  
+                                `</tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Eventid</th>
+                                        <th>Url</th>
+                                        <th>Nr of Scans</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>`
+        res.write(html);
+        res.write(`</div>`);
+        res.end();
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 app.use('/smartsign/api/v1', apiRoutes);
 
 const server = app.listen(process.env.PORT || 3002, function () {
