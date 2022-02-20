@@ -517,10 +517,10 @@
                     var blob = xhttp.response;
                     var link = document.createElement('a');
                     link.href = window.URL.createObjectURL(blob);
-                    link.download = "smartsign" + new Date() + ".pdf";
+                    link.download = "smartsign_" + id + ".pdf";
                     link.click();
                     $(cb).prop("disabled", false);
-                    $(cb).html('Ladda ner pdf ' + type);
+                    $(cb).html('Ladda ner PDF ' + type);
 
 
                 };

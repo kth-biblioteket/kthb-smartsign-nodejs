@@ -292,9 +292,8 @@ apiRoutes.get("/qrcodetracking", async function (req, res) {
     try {
         res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="qrtrackingstats">`)
 
-        //Hämta qrtrackingstatistik
+        //Hämta qrtrackingstatistik och presentera i en Data Table
         let qrtracking = await eventController.readQrcodetracking()  
-        let url = "https://www.kth.se/biblioteket/"
         let html = `<div style="margin-bottom:10px" class="card">
                         <div class="card-body">
                             <table id="qrtrackingtable" class="table table-striped" style="width:100%">
