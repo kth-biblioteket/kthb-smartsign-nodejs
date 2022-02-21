@@ -45,6 +45,48 @@ apiRoutes.get("/", async function (req, res, next) {
     }
 });
 
+apiRoutes.get('/public/style.css', function(req, res) {
+    res.sendFile(__dirname + "/public/css/" + "styles.css");
+});
+
+apiRoutes.get('/public/TheSans-Plain-kthb.ttf', function(req, res) {
+    fs.readFile(__dirname + "/public/fonts/" + "TheSans-Plain-kthb.ttf", function(error, content) {
+        if (error) {
+            if(error.code == 'ENOENT') {
+                res.writeHead(404, { 'Content-Type': 'text/html' });
+                res.end("error", 'utf-8');
+            }
+            else {
+                res.writeHead(500);
+                res.end('Font saknas: '+error.code+' ..\n');
+            }
+        }
+        else {
+            res.writeHead(200, { 'Content-Type': 'application/font-ttf' });
+            res.end(content, 'utf-8');
+        }
+    });  
+});
+
+apiRoutes.get('/public/FarnhamDisplay-RegularOSF.ttf', function(req, res) {
+    fs.readFile(__dirname + "/public/fonts/" + "FarnhamDisplay-RegularOSF.ttf", function(error, content) {
+        if (error) {
+            if(error.code == 'ENOENT') {
+                res.writeHead(404, { 'Content-Type': 'text/html' });
+                res.end("error", 'utf-8');
+            }
+            else {
+                res.writeHead(500);
+                res.end('Font saknas: '+error.code+' ..\n');
+            }
+        }
+        else {
+            res.writeHead(200, { 'Content-Type': 'application/font-ttf' });
+            res.end(content, 'utf-8');
+        }
+    });
+});
+
 apiRoutes.post("/login", eventController.login)
 
 apiRoutes.post("/logout", VerifyToken, eventController.logout)
