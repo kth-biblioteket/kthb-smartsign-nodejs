@@ -812,7 +812,7 @@ async function generatePdfPage(id, type='A4') {
             template = 'templates/smartsign_template.html'
             pdfpath = 'publishedevents/pdf/smartsign.pdf'
         }
-        let pdf = await savePageAsPdf(id, path.join(__dirname, pdfpath), type);
+        let pdf = await savePageAsPdf(id, path.join(__dirname, pdfpath), type, template);
         return pdf;
 
     } catch (err) {
@@ -846,7 +846,7 @@ async function savePageAsImage(html, imagefullpath) {
 
 }
 
-async function savePageAsPdf(events_id, pdffullpath, type) {
+async function savePageAsPdf(events_id, pdffullpath, type, template) {
     try {
         const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] },);
         const page = await browser.newPage();
@@ -858,7 +858,7 @@ async function savePageAsPdf(events_id, pdffullpath, type) {
             deviceScaleFactor: 1,
         });
 
-        await page.goto(process.env.SERVERURL + 'smartsign/api/v1/calendar/event/' + events_id, { waitUntil: 'networkidle0' })
+        await page.goto(process.env.SERVERURL + 'smartsign/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
 
         let pdf
         if (type=='A4') {

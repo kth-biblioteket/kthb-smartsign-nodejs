@@ -181,8 +181,9 @@ apiRoutes.delete("/calendar/event/image", VerifyToken, async function (req, res,
 
 apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     try {
+        let html_template = req.query.template || 'templates/smartsign_template.html'
         if (req.params.id) {
-            let page = await eventController.generateCalendarPage(req.params.id);
+            let page = await eventController.generateCalendarPage(req.params.id, html_template);
             res.send(page)
         }
     } catch(err) {
