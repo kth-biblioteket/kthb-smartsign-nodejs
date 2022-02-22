@@ -191,7 +191,7 @@ apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     }
 });
 
-apiRoutes.get("/calendar/event/image/:id", VerifyToken, eventController.getPublishedPageAsImage)
+apiRoutes.get("/calendar/event/image/:id", eventController.getPublishedPageAsImage)
 
 apiRoutes.post("/calendar/event/:id", VerifyToken, eventController.generatePublishedPageAsImage)
 
