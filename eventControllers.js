@@ -705,7 +705,7 @@ async function generatePublishedPages(type, req) {
                 calendarpagehtml = await generateCalendarPage(element.id)
                 //Saknas i kalenderfeed
                 if (calendarpagehtml != 'unpublished') {
-                    await savePageAsImage(calendarpagehtml, path.join(__dirname, "/publishedevents/images/smartsign" + index + ".jpg"))
+                    await savePageAsImage(element.id, calendarpagehtml, path.join(__dirname, "/publishedevents/images/smartsign" + index + ".jpg"), 'templates/smartsign_template.html')
                 }
                 index++
                 progress++
@@ -821,7 +821,7 @@ async function generatePdfPage(id, type='A4') {
     }
 };
 
-async function savePageAsImage(html, imagefullpath) {
+async function savePageAsImage(events_id, html, imagefullpath, template) {
     try {
         const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] },);
         const page = await browser.newPage();
@@ -833,7 +833,7 @@ async function savePageAsImage(html, imagefullpath) {
             deviceScaleFactor: 1,
         });
 
-        await page.setContent(html, { waitUntil: 'networkidle0' })
+        await page.goto(process.env.SERVERURL + 'smartsign/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
 
         await page.screenshot({ path: imagefullpath, quality: parseInt(100) });
 
