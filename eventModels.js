@@ -13,17 +13,6 @@ const readEvents = () => {
             }
             resolve(result);
         });
-
-        /*
-        const sql = `SELECT * FROM events`;
-        database.db.all(sql, [], (error, rows) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                resolve(rows);
-            }
-        });
-        */
     })
 };
 
@@ -59,18 +48,6 @@ const readAllPublished = () => {
             }
             resolve(result);
         });
-
-        /*
-        const sql = `SELECT * FROM events 
-                WHERE published = 1`;
-        database.db.all(sql, [], (error, rows) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                resolve(rows);
-            }
-        });
-        */
     })
 };
 
@@ -86,23 +63,11 @@ const readEventGuid = (guid) => {
             }
             resolve(result);
         });
-
-        /*
-        const sql = `SELECT * FROM events 
-                WHERE guid = ?`;
-        database.db.get(sql, [guid], (error, row) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                resolve(row);
-            }
-        });
-        */
     })
 
 };
 
-//Hämta ett event GUID
+//Hämta ett event contentid
 const readEventContentid = (contentid) => {
     return new Promise(function (resolve, reject) {
         const sql = `SELECT * FROM events 
@@ -130,28 +95,16 @@ const readEventId = (id) => {
             }
             resolve(result);
         });
-
-    /*
-        const sql = `SELECT * FROM events 
-                WHERE id = ?`;
-        database.db.get(sql, [id], (error, row) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                resolve(row);
-            }
-        });
-    */
     })
 };
 
 //Skapa ett event
-const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang) => {
+const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang) => {
     return new Promise(function (resolve, reject) {
 
-        const sql = `INSERT INTO events(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang)
-                VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
-        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang]), async function(err, result) {
+        const sql = `INSERT INTO events(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang)
+                VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang]), async function(err, result) {
             if(err) {
                 console.error(err);
                 reject(err.message)
@@ -177,13 +130,13 @@ const createEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smart
 };
 
 //Uppdatera ett event
-const updateEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang, id) => {
+const updateEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang, id) => {
     return new Promise(function (resolve, reject) {
 
         const sql = `UPDATE events 
-                SET guid = ?, contentid = ?, eventtime = ?, pubstarttime = ?, pubendtime = ?, smartsignlink = ?, published = ?, lang= ? 
+                SET guid = ?, contentid = ?, eventtime = ?, pubstarttime = ?, pubendtime = ?, smartsignlink = ?, published = ?, published_as_image = ?, lang= ? 
                 WHERE id = ?`;
-        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang, id]),(err, result) => {
+        database.db.query(database.mysql.format(sql,[guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang, id]),(err, result) => {
             if(err) {
                 console.error(err);
                 reject(err.message)
@@ -191,20 +144,6 @@ const updateEvent = (guid, contentid, eventtime, pubstarttime, pubendtime, smart
             const successMessage = "The event was successfully updated."
             resolve(successMessage);
         });
-
-        /*
-        const sql = `UPDATE events 
-                SET guid = ?, eventtime = ?, pubstarttime = ?, pubendtime = ?, smartsignlink = ?, published = ? 
-                WHERE id = ?`;
-        database.db.run(sql, [guid, eventtime, pubstarttime, pubendtime, smartsignlink, published, id], (error) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                const successMessage = "The event was successfully updated."
-                resolve(successMessage);
-            }
-        });
-        */
     })
 };
 
@@ -222,19 +161,6 @@ const deleteEvent = (guid) => {
             const successMessage = "The event was successfully deleted."
             resolve(successMessage);
         });
-
-        /*
-        const sql = `DELETE FROM events 
-                WHERE guid = ?`;
-        database.db.run(sql, [guid], (error) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                const successMessage = "The event was successfully deleted."
-                resolve(successMessage);
-            }
-        });
-        */
     })
 };
 
@@ -268,22 +194,23 @@ const updateEventPublish = (id, published) => {
             const successMessage = "The event was successfully updated."
             resolve(successMessage);
         });
+    })
+};
 
-        /*
-
+//Publicera ett event som image
+const updateEventPublishAsImage = (id, published_as_image) => {
+    return new Promise(function (resolve, reject) {
         const sql = `UPDATE events 
-                SET published = ? 
+                SET published_as_image = ? 
                 WHERE id = ?`;
-        database.db.run(sql, [published, id], (error) => {
-            if (error) {
-                console.log(error.message)
-                reject(error.message)
-            } else {
-                const successMessage = "The event was successfully updated."
-                resolve(successMessage);
+        database.db.query(database.mysql.format(sql,[published_as_image, id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
             }
+            const successMessage = "The event was successfully updated."
+            resolve(successMessage);
         });
-        */
     })
 };
 
@@ -301,19 +228,6 @@ const readEventFields = (events_id) => {
             }
             resolve(result);
         });
-
-        /*
-        const sql = `SELECT fields.id, eventfields.events_id, fields.type, fields.name, fields.description FROM fields
-        LEFT JOIN eventfields ON eventfields.fields_id = fields.id
-        AND eventfields.events_id = ?`;
-        database.db.all(sql, [events_id], (error, rows) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                resolve(rows);
-            }
-        });
-        */
     })
 
 };
@@ -347,19 +261,6 @@ const deleteEventField = (event_id, field_id) => {
             const successMessage = "The field was successfully deleted."
             resolve(successMessage);
         });
-
-        /*
-        const sql = `DELETE FROM eventfields
-                    WHERE events_id = ? AND fields_id = ?`;
-        database.db.run(sql, [event_id, field_id], (error) => {
-            if (error) {
-                reject(error.message)
-            } else {
-                const successMessage = "The field was successfully deleted."
-                resolve(successMessage);
-            }
-        });
-        */
     })
 };
 
@@ -537,6 +438,7 @@ module.exports = {
     deleteEvent,
     updateEventLang,
     updateEventPublish,
+    updateEventPublishAsImage,
     readEventFields,
     createEventField,
     deleteEventField,

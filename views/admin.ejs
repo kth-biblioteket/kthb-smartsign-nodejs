@@ -136,7 +136,7 @@
     <% } %>
     <div>
         <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="#">
                 <img alt="" src="https://apps.lib.kth.se/polopoly/KTH_Logotyp.svg" width="75" height="75"
                     class="d-inline-block align-top"> KTH Bibliotekets Kalender Smartsign
             </a>
@@ -184,6 +184,7 @@
         <div id="content">
             <div style="flex:2;padding-right:10px">
                 <% let published=false %>
+                <% let published_as_image=false %>
                 <%let eventtime=""%>
                 <%let frameindex=1%>
 
@@ -193,6 +194,7 @@
                     <%let eventfields=event_.eventfields%>
                     <%let eventimage=event_.eventimage %>
                     <%if(event.published==1) { published=true } else { published=false } %>
+                    <%if(event.published_as_image==1) { published_as_image=true } else { published_as_image=false } %>
                     <div class="card" style="margin-bottom:10px">
                         <div class="card-body" style="display:flex;flex-direction:row;padding-bottom:40px">
                             <div style="flex:3;padding-right:10px">
@@ -233,10 +235,13 @@
                                 <form>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" <%-published ? "checked" : "" %> onclick="publishEvent('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckDefault<%=frameindex%>">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Publicera</label>
+                                        <label class="form-check-label" for="flexSwitchCheckDefault<%=frameindex%>">Välj för publicering till slideshow</label>
                                     </div>
-
-                                    <div class="form-check">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" <%-published_as_image ? "checked" : "" %> onclick="publishEventAsImage('<%=event.id%>', this, 'frame_<%=frameindex%>');" type="checkbox" id="flexSwitchCheckAsImage<%=frameindex%>">
+                                        <label class="form-check-label" for="flexSwitchCheckAsImage<%=frameindex%>">Publicera som bild<span id="imagespinner_<%=event.id%>"></span></label>
+                                    </div>
+                                    <div style="padding-top:10px" class="form-check">
                                         <input class="form-check-input" <%-event.lang == "en" ? "checked" : "" %> onclick="updateLang('<%=event.id%>', 'en', 'frame_<%=frameindex%>');" type="radio" name="flexRadio<%=frameindex%>" id="flexRadioEnglish<%=frameindex%>">
                                         <label class="form-check-label" for="flexRadioEnglish<%=frameindex%>">
                                             Engelska
@@ -276,7 +281,7 @@
                                             <%})%>
                                         </select>
                                         <div style="padding-top:10px;" class="form-group">
-                                            <label for="smartsignLink_<%=event.id%>">Smartsignlänk</label>
+                                            <label for="smartsignLink_<%=event.id%>">Smartsignlänk HTML</label>
                                             <div class="input-group">
                                                 <input value="<%=event.smartsignlink + event.id%>"
                                                     type="text" class="form-control"
@@ -290,6 +295,23 @@
                                             </div>
                                             <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
                                         </div>
+                                        <% if(event.published_as_image==1) { %>
+                                        <div style="padding-top:10px;" class="form-group">
+                                            <label for="smartsignLinkImage_<%=event.id%>">Smartsignlänk Bild</label>
+                                            <div class="input-group">
+                                                <input value="<%=event.smartsignlink + 'image/' + event.id%>"
+                                                    type="text" class="form-control"
+                                                    id="smartsignLinkImage_<%=event.id%>" aria-describedby="linkHelp"
+                                                    placeholder="">
+                                                <span style="cursor: pointer"
+                                                    onclick="copytext('smartsignLinkImage_<%=event.id%>')"
+                                                    class="input-group-text" id="copybtn_Image_<%=event.id%>">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </span>
+                                            </div>
+                                            <small id="linkHelp" class="form-text text-muted">Klistra in länken ovan i smartsign ("lägg till url")</small>
+                                        </div>
+                                        <% } %>
                                 </form>
                             </div>
                         </div>
@@ -461,6 +483,37 @@
                     xhttp.send(JSON.stringify({
                         "events_id": events_id,
                         "publish": 0
+                    }));
+                }
+            }
+            
+            function publishEventAsImage(events_id, cb, frameid) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                if (cb.checked) {
+                    console.log($(this))
+                    $('#imagespinner_' + events_id).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Publicerar...');
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        location.reload();
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/" + events_id, true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "published_as_image": 1
+                    }));
+                } else {
+                    $('#imagespinner_' + events_id).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Avpublicerar...');
+                    xhttp.onload = function () {
+                        if (xhttp.status == 401) {
+                        }
+                        location.reload();
+                    };
+                    xhttp.open("POST", "/smartsign/api/v1/calendar/event/" + events_id, true);
+                    xhttp.setRequestHeader('Content-Type', 'application/json');
+                    xhttp.send(JSON.stringify({
+                        "published_as_image": 0
                     }));
                 }
             }

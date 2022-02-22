@@ -17,10 +17,13 @@ CREATE TABLE events (
     pubendtime DATETIME NOT NULL,
     smartsignlink VARCHAR(200) NOT NULL,
     published TINYINT(1) NOT NULL,
+    published_as_image TINYINT(1) NOT NULL,
     lang VARCHAR(10) NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT constraint_guid UNIQUE (contentid)
 );
+
+-- ALTER TABLE events ADD published_as_image TINYINT(1) NOT NULL AFTER published;
 
 CREATE TABLE fields (
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,

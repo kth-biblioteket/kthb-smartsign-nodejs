@@ -363,18 +363,18 @@ async function readEventId(id) {
     }
 }
 
-async function createEvent(guid, contentid, eventtime, pubstarttime = "none", pubendtime = "none", smartsignlink = "none", published = 0, lang='en') {
+async function createEvent(guid, contentid, eventtime, pubstarttime = "none", pubendtime = "none", smartsignlink = "none", published = 0, published_as_image = 0,lang='en') {
     try {
-        let result = await eventModel.createEvent(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang)
+        let result = await eventModel.createEvent(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang)
         return result
     } catch (err) {
         return "error: " + err.message
     }
 }
 
-async function updateEvent(guid, contentid, eventtime, pubstarttime = "none", pubendtime = "none", smartsignlink = "none", published = 0, lang='en', id) {
+async function updateEvent(guid, contentid, eventtime, pubstarttime = "none", pubendtime = "none", smartsignlink = "none", published = 0, published_as_image = 0, lang='en', id) {
     try {
-        let result = eventModel.updateEvent(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, lang, id)
+        let result = eventModel.updateEvent(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang, id)
         return result
     } catch (err) {
         console.log(err.message)
@@ -702,7 +702,6 @@ async function generatePublishedPages(type, req) {
             //Generera HTML i smartsignformat och spara som JPG
             for (const element of published) {
                 socketInstance.emit('uploadProgress', `{"type": "image", "total": ${total}, "progress": ${progress}}`);
-                calendarpagehtml = await generateCalendarPage(element.id)
                 //Saknas i kalenderfeed
                 if (calendarpagehtml != 'unpublished') {
                     await savePageAsImage(element.id, calendarpagehtml, path.join(__dirname, "/publishedevents/images/smartsign" + index + ".jpg"), 'templates/smartsign_template.html')
@@ -747,6 +746,60 @@ async function generatePublishedPages(type, req) {
         return "Error creating slides";
     }
 };
+
+async function generatePublishedPageAsImage(req, res) {
+    try {
+        let published_as_image = req.query.published_as_image || req.body.published_as_image
+        await eventModel.updateEventPublishAsImage(req.params.id, published_as_image)
+        if(published_as_image == 0) {
+            //remove image file
+            fs.unlinkSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"));
+            res.send("Event Image deleted, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"))
+        } else {
+            await savePageAsImage(req.params.id, "", path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"), 'templates/smartsign_template.html')
+            res.send("Event Image generated, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"))
+        }
+    } catch (err) {
+        res.send("error: " + err.message)
+    }
+}
+
+async function getPublishedPageAsImage(req, res) {
+    try {
+        const eventimage = fs.readFileSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg" ))
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write(`
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                <title>KTH Library Calendar</title>
+                <link rel="shortcut icon" href="/favicon.ico">
+            </head>
+            <style>
+                body {
+                    height: 1900px;
+                    width: 1080px;
+                    overflow: hidden;
+                    margin: 0;
+                    padding: 0;
+                    font-family: sans-serif;
+                }
+            </style>
+            <body>`)   
+        res.write('<img src="data:image/jpeg;base64,')
+        res.write(Buffer.from(eventimage).toString('base64'));
+        res.write('"/>');
+        res.write(`
+            </body>
+        </html>`)
+        res.end();
+    }
+    catch (err) {
+        res.send("unpublished event")
+    }
+}
 
 async function generateQrCode(id) {
     try {
@@ -930,6 +983,8 @@ module.exports = {
     createQrcodetracking,
     generateCalendarPage,
     generatePublishedPages,
+    generatePublishedPageAsImage,
+    getPublishedPageAsImage,
     generateQrCode,
     generatePdfPage,
     savePageAsImage,

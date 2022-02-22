@@ -191,6 +191,10 @@ apiRoutes.get("/calendar/event/:id", async function (req, res, next) {
     }
 });
 
+apiRoutes.get("/calendar/event/image/:id", VerifyToken, eventController.getPublishedPageAsImage)
+
+apiRoutes.post("/calendar/event/:id", VerifyToken, eventController.generatePublishedPageAsImage)
+
 apiRoutes.get("/calendar/event/qrcode/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
@@ -271,7 +275,8 @@ apiRoutes.get("/calendar/images", async function (req, res) {
         res.write(`</div>`)
         res.end();
     } catch(err) {
-        res.send(err.message)
+        res.write(err.message + `</div>`)
+        res.end();
     }
 });
 
