@@ -633,7 +633,7 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
 
                 if (row.events_id !== null && row.type == 'ingress') {
                     if (cheeriocalendar("#mainContent .lead").length) {
-                        template('#ingress').html(truncate(cheeriocalendar("#mainContent .lead p").text(), 200, "..."));
+                        template('#ingress').html(truncate(cheeriocalendar("#mainContent .preArticleParagraphs .lead p").text(), 200, "..."));
                     }
                 }
 
@@ -753,11 +753,11 @@ async function generatePublishedPageAsImage(req, res) {
         await eventModel.updateEventPublishAsImage(req.params.id, published_as_image)
         if(published_as_image == 0) {
             //remove image file
-            fs.unlinkSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"));
-            res.send("Event Image deleted, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"))
+            fs.unlinkSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT));
+            res.send("Event Image deleted, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT))
         } else {
-            await savePageAsImage(req.params.id, "", path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"), 'templates/smartsign_template.html')
-            res.send("Event Image generated, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg"))
+            await savePageAsImage(req.params.id, "", path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT), 'templates/smartsign_template.html')
+            res.send("Event Image generated, " + path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT))
         }
     } catch (err) {
         res.send("error: " + err.message)
@@ -766,7 +766,7 @@ async function generatePublishedPageAsImage(req, res) {
 
 async function getPublishedPageAsImage(req, res) {
     try {
-        const eventimage = fs.readFileSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + ".jpg" ))
+        const eventimage = fs.readFileSync(path.join(__dirname, "/publishedevents/images/smartsign_event_" + req.params.id + "." + process.env.IMAGE_FORMAT))
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write(`
         <!DOCTYPE html>
