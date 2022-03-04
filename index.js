@@ -449,10 +449,10 @@ apiRoutes.get("/qrcode/general/:id", async function (req, res) {
     try {
         if (req.params.id) {
             //Hämta url
-            let url = await eventController.readQrCodeGeneral(req.params.id);
+            let qrcode = await eventController.readQrCodeGeneral(req.params.id);
 
             //Spara info
-            eventController.createQrcodetracking(0, url, req.headers["user-agent"]);
+            eventController.createQrcodetracking(0, qrcode[0].url, req.headers["user-agent"]);
 
             //Skicka vidare
             res.redirect(url);
