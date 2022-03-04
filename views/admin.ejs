@@ -152,7 +152,11 @@
                 <form style="flex:2;display:flex;justify-content:flex-end">
                     <button style="margin-right:10px" type="button" onclick="getQrtracking()" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#qrcodetrackingModal">
-                                Statistik
+                                Statistik QR-Scans
+                    </button>
+                    <button style="margin-right:10px" type="button" onclick="getQrCodesGeneral()" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#qrcodeGeneralModal">
+                                Hantera QR-Koder
                     </button>
                     <button type="button" class="btn btn-outline-success" onclick="logout()">Logout</button>
                 </form>
@@ -409,6 +413,33 @@
                                     aria-valuemin="0" aria-valuemax="100" style="width:0%">
                                     <span class="sr-only">0% Complete</span>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="qrcodeGeneralModal" tabindex="-1" aria-labelledby="qrcodeGeneralModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="qrcodeGeneralModalLabel">QR-koder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="QRGeneralmodal-body modal-body">
+                    </div>
+                    <div class="QRGeneralmodal-footer modal-footer">
+                        <div style="flex:2;display:flex;flex-direction:column">
+                            <div id="uploadAlertPlaceholder"></div>
+                            
+                            <div style="display:flex">
+                                <label for="QRGeneralUrl">Lägg till QR-Kod</label>
+                            <input type="text" placeholder="Skriv in URL"
+                                class="form-control" name="QRGeneralUrl" id="QRGeneralUrl">
+                                <button style="width:50%" class="browse btn btn-primary px-4" type="button"
+                                    onclick="createQrCodeGeneral()">
+                                    Lägg till
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -733,6 +764,68 @@
                     getImages()
                 };
                 xhttp.open("DELETE", "/smartsign/api/v1/calendar/images/" + id, true);
+                xhttp.send();
+            }
+            
+            function createQrCodeGeneral() {
+                checkjwt()
+                url = $("#QRGeneralUrl").val();
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    getQrCodesGeneral()
+                    setTimeout(function () {}, 3000);
+                };
+                xhttp.open("POST", "/smartsign/api/v1/qrcode/general", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "url": url
+                }));
+            }
+
+            function deleteQrCodeGeneral(id) {
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    getQrCodesGeneral()
+                    setTimeout(function () {}, 3000);
+                };
+                xhttp.open("DELETE", "/smartsign/api/v1/qrcode/general", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "id": id
+                }));
+            }
+
+            function updateQrCodeGeneral(id, urlselector) {
+                checkjwt()
+                let url = $("#" + urlselector).val();
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    getQrCodesGeneral()
+                    setTimeout(function () {}, 3000);
+                };
+                xhttp.open("PUT", "/smartsign/api/v1/qrcode/general", true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+                xhttp.send(JSON.stringify({
+                    "id": id,
+                    "url": url
+                }));
+            }
+
+            function getQrCodesGeneral() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    $('.QRGeneralmodal-body').html(xhttp.response)
+                };
+                xhttp.open("GET", "/smartsign/api/v1/qrcodes/general", true);
                 xhttp.send();
             }
 

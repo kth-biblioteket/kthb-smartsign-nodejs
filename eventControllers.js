@@ -545,6 +545,55 @@ async function createQrcodetracking(events_id, url, browser) {
     }
 }
 
+async function readQrCodesGeneral() {
+    try {
+        result = await eventModel.readQrCodesGeneral()
+        return result;
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+async function readQrCodeGeneral(id) {
+    try {
+        let result = await eventModel.readQrCodeGeneral(id)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function createQrCodeGeneral(url) {
+    try {
+        let created_id = await eventModel.createQrCodeGeneral(url)
+        return created_id
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function updateQrCodeGeneral(id, url) {
+    try {
+        let result = await eventModel.updateQrCodeGeneral(id, url)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
+async function deleteQrCodeGeneral(id) {
+    try {
+        let created_id = await eventModel.deleteQrCodeGeneral(id)
+        return created_id
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
 async function generateCalendarPage(events_id, html_template = 'templates/smartsign_template.html', lang ='sv') {
     const files = fs.readFileSync(path.join(__dirname, html_template));
     const template = cheerio.load(files.toString(), null, false);
@@ -845,6 +894,46 @@ async function generateQrCode(id) {
     }
 }
 
+async function generateQrCodeGeneral(id) {
+    try {
+        //let QrCode = await readQrCodeGeneral(id)
+        const file = "kthlogo.jpg"
+        const logo = fs.readFileSync(path.join(__dirname, "public/images/" + file))
+
+        const canvas = createCanvas(500, 500);
+        QRCode.toCanvas(
+            canvas,
+            process.env.QRCODELINK + 'general/' + id,
+            {
+                width: 500,
+                height: 500,
+                correctLevel: "H",
+                margin: 1,
+                color: {
+                    dark: "#212121",
+                    light: "#ffffff",
+                },
+            }
+        );
+
+        const kthlogbase64 = `data:image/jpeg;base64,${Buffer.from(logo).toString('base64')}`
+
+        const ctx = canvas.getContext("2d");
+        const img = await loadImage(kthlogbase64);
+        const center = (500 - 100) / 2;
+        ctx.fillStyle = "#FFFFFF";
+        const fillcenter = (500 - 125) / 2;
+        ctx.fillRect(fillcenter, fillcenter, 125, 125);
+        ctx.globalAlpha = 0.95;
+        ctx.drawImage(img, center, center, 100, 100);
+        ctx.globalAlpha = 1.0;
+        return canvas.toDataURL("image/png");
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
 async function generatePdfPage(id, type='A4') {
     try {
         let calendarpagehtml = "";
@@ -981,11 +1070,17 @@ module.exports = {
     deleteImage,
     readQrcodetracking,
     createQrcodetracking,
+    readQrCodesGeneral,
+    readQrCodeGeneral,
+    createQrCodeGeneral,
+    updateQrCodeGeneral,
+    deleteQrCodeGeneral,
     generateCalendarPage,
     generatePublishedPages,
     generatePublishedPageAsImage,
     getPublishedPageAsImage,
     generateQrCode,
+    generateQrCodeGeneral,
     generatePdfPage,
     savePageAsImage,
     savePageAsPdf,

@@ -425,6 +425,85 @@ const createQrcodetracking = (events_id, url, browser) => {
     })
 };
 
+//Hämta alla qrcodes
+const readQrCodesGeneral = () => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT * FROM qrcodegeneral`;
+        database.db.query(database.mysql.format(sql,[]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Hämta en qrcode
+const readQrCodeGeneral = (id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT * FROM qrcodegeneral 
+                    WHERE id = ?`;
+        database.db.query(database.mysql.format(sql,[id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Lägg till qrcode
+const createQrCodeGeneral = (url) => {
+    return new Promise(function (resolve, reject) {
+        console.log(url)
+        const sql = `INSERT INTO qrcodegeneral(url)
+                VALUES(?)`;
+        database.db.query(database.mysql.format(sql,[url]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The qrcodeurl was successfully created."
+            resolve(result.insertId);
+        });
+    })
+};
+
+//Uppdatera qrcode generell
+const updateQrCodeGeneral = (id, url) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `UPDATE qrcodegeneral
+                    SET url = ?
+                    WHERE id = ?`;
+        database.db.query(database.mysql.format(sql,[url, id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The qrcode was successfully updated."
+            resolve(successMessage);
+        });
+    })
+};
+
+//Ta bort qrcode generell
+const deleteQrCodeGeneral = (id) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `DELETE FROM qrcodegeneral
+                    WHERE id = ?`;
+        database.db.query(database.mysql.format(sql,[id]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            const successMessage = "The qrcode was successfully deleted."
+            resolve(successMessage);
+        });
+    })
+};
+
 
 module.exports = {
     readEvents,
@@ -451,5 +530,10 @@ module.exports = {
     updateImage,
     deleteImage,
     readQrcodetracking,
-    createQrcodetracking
+    createQrcodetracking,
+    readQrCodesGeneral,
+    readQrCodeGeneral,
+    createQrCodeGeneral,
+    updateQrCodeGeneral,
+    deleteQrCodeGeneral
 };

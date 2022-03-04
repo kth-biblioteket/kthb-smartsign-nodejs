@@ -336,6 +336,132 @@ apiRoutes.get("/qrcode/:eventid", async function (req, res) {
     }
 });
 
+//Hämta inlagda generella QR-Koder
+apiRoutes.get("/qrcodes/general", async function (req, res) {
+    try {
+        res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="qrcodes">`)
+
+        //Hämta alla qrkoder
+        let qrcodes_general = await eventController.readQrCodesGeneral()
+
+        for (i=0;i<qrcodes_general.length;i++) {
+            const QrCodeGeneralImage  =  await eventController.generateQrCodeGeneral(qrcodes_general[i].id)
+            res.write(`<div style="margin-bottom:10px" class="card">
+                            <div class="card-body">
+                                <div style="display:flex;flex-direction:row;padding-bottom:10px">
+                                    <div style="flex:1;display:flex;flex-direction:row">
+                                        <div style="flex:3">
+                                            <label for="QrCodeGeneralUrl_${qrcodes_general[i].id}">Url</label>
+                                            <input id="QrCodeGeneralUrl_${qrcodes_general[i].id}" style="margin-bottom:10px" class="form-control" type="text" value="${qrcodes_general[i].url}"">
+                                        </div>
+                                        <div style="flex:1;text-align: center">
+                                            <label for="QrCodeGeneral_${qrcodes_general[i].id}">QR Kod</label>
+                                            <img id="QrCodeGeneralImg_${qrcodes_general[i].id}" style="margin:auto;display:block;width:38px" src="`)
+                                        res.write(QrCodeGeneralImage);
+                                res.write(`"/><a download="qrcode.png" href="`); res.write(QrCodeGeneralImage); res.write(`">Download</a>
+                                        </div>`);
+                        res.write(`     <div style="flex:1;display:flex">
+                                            <button id="updateQrCodeGeneral_${qrcodes_general[i].id}" onclick="updateQrCodeGeneral('${qrcodes_general[i].id}', 'QrCodeGeneralUrl_${qrcodes_general[i].id}');" type="button" class="btn btn-primary" style="margin-right:10px">
+                                                Spara
+                                            </button>
+                                            <button id="deleteQrCodeGeneral_${qrcodes_general[i].id}" onclick="deleteQrCodeGeneral('${qrcodes_general[i].id}');" type="button" class="btn btn-primary">
+                                                Ta bort
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`)
+        };
+        res.write(`</div>`)
+        res.end();
+    } catch(err) {
+        res.write(err.message + `</div>`)
+        res.end();
+    }
+});
+
+//Skapa QR-code generell
+apiRoutes.post("/qrcode/general", async function (req, res, next) {
+    try {
+        
+        if (req.body.url) {
+            //Lägg till URL i DB (tabell: qrcodegeneral)
+            let created_id = await eventController.createQrCodeGeneral(req.body.url);
+            res.send(created_id.toString())
+            
+        } else {
+            res.status(400).send("url missing")
+        }
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+//Uppdatera QR-code generell
+apiRoutes.put("/qrcode/general", async function (req, res, next) {
+    try {
+        
+        if (req.body.id && req.body.url) {
+            let result = await eventController.updateQrCodeGeneral(req.body.id, req.body.url);
+            res.send(result)
+            
+        } else {
+            res.status(400).send("parameters missing")
+        }
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+//Ta bort QR-code generell
+apiRoutes.delete("/qrcode/general", async function (req, res, next) {
+    try {
+        
+        if (req.body.id) {
+            //Lägg till URL i DB (tabell: qrcodegeneral)
+            let result = await eventController.deleteQrCodeGeneral(req.body.id);
+            res.send(result)
+            
+        } else {
+            res.status(400).send("id missing")
+        }
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+//Generera QR-code generell
+apiRoutes.get("/qrcode/general/generate/:id", async function (req, res, next) {
+    try {
+        if (req.params.id) {
+            let qrcode = await eventController.generateQrCodeGeneral(req.params.id);
+            res.send(qrcode)
+            
+        }
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
+//Skicka vidare till rätt url från en QRCode-scanning och spara statistik
+apiRoutes.get("/qrcode/general/:id", async function (req, res) {
+    try {
+        if (req.params.id) {
+            //Hämta url
+            let url = await eventController.readQRCodeUrl(req.params.id);
+
+            //Spara info
+            eventController.createQrcodetracking(0, url, req.headers["user-agent"]);
+
+            //Skicka vidare
+            res.redirect(url);
+        }
+    } catch(err) {
+        res.send(err.message)
+    }
+});
+
 apiRoutes.get("/qrcodetracking", async function (req, res) {
     try {
         res.write(`<div style="display:flex;flex-direction:column;flex-wrap:wrap" id="qrtrackingstats">`)
