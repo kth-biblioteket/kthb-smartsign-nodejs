@@ -455,7 +455,7 @@ apiRoutes.get("/qrcode/general/:id", async function (req, res) {
             eventController.createQrcodetracking(0, qrcode[0].url, req.headers["user-agent"]);
 
             //Skicka vidare
-            res.redirect(url);
+            res.redirect(qrcode[0].url);
         }
     } catch(err) {
         res.send(err.message)
