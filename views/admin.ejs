@@ -842,9 +842,11 @@
             }
 
             function getQrCodesGeneral() {
+                $('.QRGeneralmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
+                        $('.QRGeneralmodal-body').html('Fel vid hämtning')
                     }
                     $('.QRGeneralmodal-body').html(xhttp.response)
                     $(function () {
