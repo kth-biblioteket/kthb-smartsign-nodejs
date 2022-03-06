@@ -345,7 +345,7 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
         let qrcodes_general = await eventController.readQrCodesGeneral()
 
         for (i=0;i<qrcodes_general.length;i++) {
-            const QrCodeGeneralImage  =  await eventController.generateQrCodeGeneral(qrcodes_general[i].id)
+            //const QrCodeGeneralImage  =  await eventController.generateQrCodeGeneral(qrcodes_general[i].id)
             res.write(`<div style="1margin-bottom:10px" class="1card">
                             <div class="1card-body">
                                 <div style="display:flex;flex-direction:row;1padding-bottom:10px">
@@ -355,20 +355,25 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
                                             <input id="QrCodeGeneralUrl_${qrcodes_general[i].id}" class="form-control" type="text" value="${qrcodes_general[i].url}"">
                                         </div>
                                         <div style="padding-left:20px;text-align: center;">
+                                            <button id="qrcodebtn_<%=event.id%>"
+                                                onclick="getQrCodeGeneral('${qrcodes_general[i].id}', '', this);"
+                                                type="button" class="btn btn-primary" style="margin-right:10px" data-toggle="tooltip" title="Ladda ner QR-code i PNG-format" data-placement="top">
+                                                Hämta QR Kod
+                                            </button>
                                             <!--label for="QrCodeGeneral_${qrcodes_general[i].id}">QR Kod</label-->
                                             `)
                                         
-                                res.write(`<a data-toggle="tooltip" title="Ladda ner mig!" data-placement="top" download="qrcode.png" href="`);
-                                res.write(QrCodeGeneralImage); 
-                                res.write(`"><img id="QrCodeGeneralImg_${qrcodes_general[i].id}" style="margin:auto;display:block;width:38px" src="`);
-                                res.write(QrCodeGeneralImage);
-                                res.write(`"/></a>`)
+                                //res.write(`<a data-toggle="tooltip" title="Ladda ner mig!" data-placement="top" href="`);
+                                //res.write(QrCodeGeneralImage); 
+                                //res.write(`"><img id="QrCodeGeneralImg_${qrcodes_general[i].id}" style="margin:auto;display:block;width:38px" src="`);
+                                //res.write(QrCodeGeneralImage);
+                                //res.write(`/smartsign/api/v1/qrcode/general/generate/${qrcodes_general[i].id}"/>Ladda ner</a>`)
                             res.write(` </div>`);
                         res.write(`     <div style="flex:1;display:flex;justify-content: flex-end">
-                                            <button id="updateQrCodeGeneral_${qrcodes_general[i].id}" onclick="updateQrCodeGeneral('${qrcodes_general[i].id}', 'QrCodeGeneralUrl_${qrcodes_general[i].id}');" type="button" class="btn btn-primary" style="margin-right:10px">
+                                            <button id="updateQrCodeGeneral_${qrcodes_general[i].id}" onclick="updateQrCodeGeneral('${qrcodes_general[i].id}', 'QrCodeGeneralUrl_${qrcodes_general[i].id}');" type="button" class="btn btn-success" style="margin-right:10px">
                                                 Spara
                                             </button>
-                                            <button id="deleteQrCodeGeneral_${qrcodes_general[i].id}" onclick="deleteQrCodeGeneral('${qrcodes_general[i].id}');" type="button" class="btn btn-primary">
+                                            <button id="deleteQrCodeGeneral_${qrcodes_general[i].id}" onclick="deleteQrCodeGeneral('${qrcodes_general[i].id}');" type="button" class="btn btn-danger">
                                                 Ta bort
                                             </button>
                                         </div>
@@ -435,13 +440,20 @@ apiRoutes.delete("/qrcode/general", async function (req, res, next) {
     }
 });
 
-//Generera QR-code generell
+//Skicka QR-code generell som png-bild
 apiRoutes.get("/qrcode/general/generate/:id", async function (req, res, next) {
     try {
         if (req.params.id) {
             let qrcode = await eventController.generateQrCodeGeneral(req.params.id);
-            res.send(qrcode)
+            const im = qrcode.split(",")[1];
+            const img = Buffer.from(im, 'base64');
+
+            res.writeHead(200, {
+                'Content-Type': 'image/png',
+                'Content-Length': img.length
+            });
             
+            res.end(img); 
         }
     } catch(err) {
         res.send(err.message)

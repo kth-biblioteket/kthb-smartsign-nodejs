@@ -617,6 +617,30 @@
                 xhttp.send();
             }
 
+            function getQrCodeGeneral(id, imageid, button) {
+                $(button).prop("disabled", true);
+                $(button).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar QR Kod...');
+                checkjwt()
+                var xhttp = new XMLHttpRequest();
+                xhttp.onload = function () {
+                    if (xhttp.status == 401) {
+                    }
+                    var blob = xhttp.response;
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = "qrcode.png";
+                    link.click();
+                    $(button).prop("disabled", false);
+                    $(button).html('Hämta QR Kod');
+
+
+                };
+                xhttp.open("GET", "/smartsign/api/v1/qrcode/general/generate/" + id, true);
+                xhttp.responseType = "blob";
+                xhttp.setRequestHeader('Content-Type', 'image/png');
+                xhttp.send();
+            }
+
             function getPdf(id, cb, type) {
                 $(cb).prop("disabled", true);
                 $(cb).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Skapar pdf...');
