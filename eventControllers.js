@@ -11,10 +11,9 @@ const puppeteer = require('puppeteer');
 const QRCode = require("qrcode");
 const { createCanvas, loadImage } = require("canvas");
 
-/**
- * Funktion som visar som genererar ett 
- * admingränssnitt med alla Kalenderhändelser
- */
+
+// Funktion som visar som genererar ett 
+// admingränssnitt med alla Kalenderhändelser
 async function readEventsPaginated(req, res, next) {
     
     let data = []
@@ -545,7 +544,7 @@ async function createQrcodetracking(events_id, url, browser) {
     }
 }
 
-//Hämta alla qrkoder
+//Hämta alla generella qrkoder
 async function readQrCodesGeneral() {
     try {
         result = await eventModel.readQrCodesGeneral()
@@ -556,7 +555,7 @@ async function readQrCodesGeneral() {
     }
 }
 
-//Hämta en qrkod
+//Hämta en generell qrkod
 async function readQrCodeGeneral(id) {
     try {
         let result = await eventModel.readQrCodeGeneral(id)
