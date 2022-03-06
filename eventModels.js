@@ -457,7 +457,6 @@ const readQrCodeGeneral = (id) => {
 //Lägg till qrcode
 const createQrCodeGeneral = (url) => {
     return new Promise(function (resolve, reject) {
-        console.log(url)
         const sql = `INSERT INTO qrcodegeneral(url)
                 VALUES(?)`;
         database.db.query(database.mysql.format(sql,[url]),(err, result) => {

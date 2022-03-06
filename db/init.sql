@@ -113,4 +113,5 @@ VALUES
 ('language','Språk','Språket för händelsen'),
 ('lecturer','Föreläsare','Föreläsare för händelsen'),
 ('image','Bild','Bilden för händelsen(från polopoly)'),
-('qrcode','QR-Kod','QR-kod med länk till händelsen');
+('qrcode','QR-Kod','QR-kod med länk till händelsen'),
+('typeofevent','Typ av event','Vad är det för typ av event');

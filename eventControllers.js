@@ -545,6 +545,7 @@ async function createQrcodetracking(events_id, url, browser) {
     }
 }
 
+//Hämta alla qrkoder
 async function readQrCodesGeneral() {
     try {
         result = await eventModel.readQrCodesGeneral()
@@ -554,6 +555,8 @@ async function readQrCodesGeneral() {
         return "error: " + err.message
     }
 }
+
+//Hämta en qrkod
 async function readQrCodeGeneral(id) {
     try {
         let result = await eventModel.readQrCodeGeneral(id)
@@ -637,9 +640,10 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
 
             let signhtml = "";
             const cheeriocalendar = cheerio.load(response.data, null, false);
+            let cheeriodescription = cheerio.load(item[0].content, null, false);
 
             eventfields.forEach(row => {
-
+                
                 if (row.events_id !== null && row.type == 'title') {
                     template('#rubrikplatta').text(item[0].title);
                 }
@@ -677,6 +681,12 @@ async function generateCalendarPage(events_id, html_template = 'templates/smarts
                     }
                     if (cheeriocalendar("strong:contains(Föreläsare)").length) {
                         template('#lecturer').html(cheeriocalendar("strong:contains(Föreläsare)").parent().html());
+                    }
+                }
+
+                if (row.events_id !== null && row.type == 'typeofevent') {
+                    if (cheeriodescription(".subject").html().length) {
+                        template('#typeofevent').html(cheeriodescription(".subject").html());
                     }
                 }
 
@@ -896,7 +906,6 @@ async function generateQrCode(id) {
 
 async function generateQrCodeGeneral(id) {
     try {
-        //let QrCode = await readQrCodeGeneral(id)
         const file = "kthlogo.jpg"
         const logo = fs.readFileSync(path.join(__dirname, "public/images/" + file))
 

@@ -346,21 +346,25 @@ apiRoutes.get("/qrcodes/general", async function (req, res) {
 
         for (i=0;i<qrcodes_general.length;i++) {
             const QrCodeGeneralImage  =  await eventController.generateQrCodeGeneral(qrcodes_general[i].id)
-            res.write(`<div style="margin-bottom:10px" class="card">
-                            <div class="card-body">
-                                <div style="display:flex;flex-direction:row;padding-bottom:10px">
+            res.write(`<div style="1margin-bottom:10px" class="1card">
+                            <div class="1card-body">
+                                <div style="display:flex;flex-direction:row;1padding-bottom:10px">
                                     <div style="flex:1;display:flex;flex-direction:row">
                                         <div style="flex:3">
-                                            <label for="QrCodeGeneralUrl_${qrcodes_general[i].id}">Url</label>
-                                            <input id="QrCodeGeneralUrl_${qrcodes_general[i].id}" style="margin-bottom:10px" class="form-control" type="text" value="${qrcodes_general[i].url}"">
+                                            <!--label for="QrCodeGeneralUrl_${qrcodes_general[i].id}">Url</label-->
+                                            <input id="QrCodeGeneralUrl_${qrcodes_general[i].id}" class="form-control" type="text" value="${qrcodes_general[i].url}"">
                                         </div>
-                                        <div style="flex:1;text-align: center">
-                                            <label for="QrCodeGeneral_${qrcodes_general[i].id}">QR Kod</label>
-                                            <img id="QrCodeGeneralImg_${qrcodes_general[i].id}" style="margin:auto;display:block;width:38px" src="`)
-                                        res.write(QrCodeGeneralImage);
-                                res.write(`"/><a download="qrcode.png" href="`); res.write(QrCodeGeneralImage); res.write(`">Download</a>
-                                        </div>`);
-                        res.write(`     <div style="flex:1;display:flex">
+                                        <div style="padding-left:20px;text-align: center;">
+                                            <!--label for="QrCodeGeneral_${qrcodes_general[i].id}">QR Kod</label-->
+                                            `)
+                                        
+                                res.write(`<a data-toggle="tooltip" title="Ladda ner mig!" data-placement="top" download="qrcode.png" href="`);
+                                res.write(QrCodeGeneralImage); 
+                                res.write(`"><img id="QrCodeGeneralImg_${qrcodes_general[i].id}" style="margin:auto;display:block;width:38px" src="`);
+                                res.write(QrCodeGeneralImage);
+                                res.write(`"/></a>`)
+                            res.write(` </div>`);
+                        res.write(`     <div style="flex:1;display:flex;justify-content: flex-end">
                                             <button id="updateQrCodeGeneral_${qrcodes_general[i].id}" onclick="updateQrCodeGeneral('${qrcodes_general[i].id}', 'QrCodeGeneralUrl_${qrcodes_general[i].id}');" type="button" class="btn btn-primary" style="margin-right:10px">
                                                 Spara
                                             </button>
