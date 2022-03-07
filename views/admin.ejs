@@ -393,7 +393,7 @@
                         <h5 class="modal-title" id="exampleModalLabel">Bildbank</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="imagebankmodal-body modal-body">
 
                     </div>
                     <div class="modal-footer">
@@ -766,12 +766,15 @@
             }
 
             function getImages() {
+                $('.imagebankmodal-body').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Hämtar...');
+                
                 checkjwt()
                 var xhttp = new XMLHttpRequest();
                 xhttp.onload = function () {
                     if (xhttp.status == 401) {
+                        $('.QRGeneralmodal-body').html('Fel vid hämtning')
                     }
-                    $('.modal-body').html(xhttp.response)
+                    $('.imagebankmodal-body').html(xhttp.response)
                 };
                 xhttp.open("GET", "/smartsign/api/v1/calendar/images", true);
                 xhttp.send();
