@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 var jwkToPem = require('jwk-to-pem');
-const axios = require('axios')
+const axios = require('axios');
 
 function verifyToken(req, res, next) {
     let token = req.body.apikey
@@ -31,7 +31,17 @@ function verifyToken(req, res, next) {
             }
             if (response.data.ugusers) {
                 if (response.data.ugusers.kthPAGroupMembership) {
-                    if (response.data.ugusers.kthPAGroupMembership.indexOf(process.env.AUTHORIZEDGROUPS) !== -1) {
+                    
+                    let authorized = false;
+                    let authorizedgroupsarray = process.env.AUTHORIZEDGROUPS.split(';')
+                    for (i=0 ; i < authorizedgroupsarray.length; i++) {
+                        if (response.data.ugusers.kthPAGroupMembership.indexOf(authorizedgroupsarray[i]) !== -1) {
+                            authorized = true;
+                            break;
+                        }
+                    }
+                    
+                    if (authorized) {
                         req.token = jwt.sign({ id: req.userprincipalname }, process.env.SECRET, {
                             expiresIn: "7d"
                         });

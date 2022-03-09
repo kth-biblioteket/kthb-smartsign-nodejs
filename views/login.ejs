@@ -27,7 +27,7 @@
             <input class="form-control" type="username" id="username" name="username" placeholder="Ange KTH-id" />
             <label class="form-label">Lösenord</label>
             <input class="form-control" type="password" id="password" name="password" placeholder="Ange lösenord" />
-            <button type="button" class="btn btn-primary" type="submit" onclick="loginUser()">Submit</button>
+            <button id="submit" type="button" class="btn btn-primary" type="submit" onclick="loginUser()">Submit</button>
         </form>
         <div id="errormessage">
             <% if (logindata.status == 'error') { %>
@@ -36,6 +36,14 @@
         </div>
     </div>
     <script>
+        $('#loginform').on('keydown', 'input', function(e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                $('#submit').click();
+            }
+        });
+        
         function loginUser() {
             var username = document.getElementById("username").value + '@ug.kth.se';
             var password = document.getElementById("password").value;
