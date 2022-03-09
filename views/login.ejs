@@ -29,7 +29,11 @@
             <input class="form-control" type="password" id="password" name="password" placeholder="Ange lösenord" />
             <button type="button" class="btn btn-primary" type="submit" onclick="loginUser()">Submit</button>
         </form>
-        <div id="errormessage"></div>
+        <div id="errormessage">
+            <% if (logindata.status == 'error') { %>
+                <%=logindata.message %>
+            <% } %>
+        </div>
     </div>
     <script>
         function loginUser() {
