@@ -41,7 +41,7 @@ apiRoutes.get("/", async function (req, res, next) {
         let verify = await VerifyAdmin(req, res, next)
         res.redirect("/smartsign/api/v1/admin")
     } catch(err) {
-        res.render('login')
+        res.render('login', {logindata: {"status":"ok", "message":"login"}})
     }
 });
 
