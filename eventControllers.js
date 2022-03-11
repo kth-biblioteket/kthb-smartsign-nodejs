@@ -982,7 +982,7 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
             height: 1920,
             deviceScaleFactor: 1,
         });
-
+        
         await page.goto(process.env.SERVERURL + 'smartsign/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
 
         await page.screenshot({ path: imagefullpath, quality: parseInt(100) });
@@ -991,6 +991,7 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
 
     }
     catch (error) {
+        console.log(process.env.SERVERURL + 'smartsign/api/v1/calendar/event/' + events_id + '?template=' + template)
         console.log(error)
     }
 
