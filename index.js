@@ -49,6 +49,10 @@ apiRoutes.get('/public/style.css', function(req, res) {
     res.sendFile(__dirname + "/public/css/" + "styles.css");
 });
 
+apiRoutes.get('/public/styles_pdf.css', function(req, res) {
+    res.sendFile(__dirname + "/public/css/" + "styles_pdf.css");
+});
+
 apiRoutes.get('/public/TheSans-Plain-kthb.ttf', function(req, res) {
     fs.readFile(__dirname + "/public/fonts/" + "TheSans-Plain-kthb.ttf", function(error, content) {
         if (error) {

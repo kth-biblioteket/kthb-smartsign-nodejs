@@ -979,10 +979,10 @@ async function generatePdfPage(id, type='A4') {
         let template
         let pdfpath
         if(type=='A4'){
-            template = 'templates/smartsign_template_A4.html'
+            template = 'templates/smartsign_template_pdf_A4.html'
             pdfpath = 'publishedevents/pdf/smartsign_A4.pdf'
         } else {
-            template = 'templates/smartsign_template.html'
+            template = 'templates/smartsign_template_pdf.html'
             pdfpath = 'publishedevents/pdf/smartsign.pdf'
         }
         let pdf = await savePageAsPdf(id, path.join(__dirname, pdfpath), type, template);
