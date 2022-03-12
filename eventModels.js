@@ -4,9 +4,24 @@ const database = require('./db');
 const readEvents = () => {
     return new Promise(function (resolve, reject) {
         const sql = `SELECT * FROM events
-                    WHERE eventtime > now()
-                    ORDER BY eventtime`;
+                     ORDER BY eventtime`;
         database.db.query(database.mysql.format(sql,[]),(err, result) => {
+            if(err) {
+                console.error(err);
+                reject(err.message)
+            }
+            resolve(result);
+        });
+    })
+};
+
+//Hämta alla Events efter angivet datum
+const readEventsByDate = (eventtime) => {
+    return new Promise(function (resolve, reject) {
+        const sql = `SELECT * FROM events
+                     WHERE eventtime > ?
+                    ORDER BY eventtime`;
+        database.db.query(database.mysql.format(sql,[eventtime]),(err, result) => {
             if(err) {
                 console.error(err);
                 reject(err.message)
@@ -506,6 +521,7 @@ const deleteQrCodeGeneral = (id) => {
 
 module.exports = {
     readEvents,
+    readEventsByDate,
     readEventsPaginated,
     readAllPublished,
     readEventGuid,

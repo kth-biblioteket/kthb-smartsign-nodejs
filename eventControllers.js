@@ -86,9 +86,13 @@ async function readEventsPaginated(req, res, next) {
                     //Skapa event om det inte existerar
                     let createevent = await createEvent(item.guid, contentid, eventtime, eventtime, eventtime, process.env.SMARTSIGNLINK, 0)
                 } else {
-                    //uppdatera eventuellt ändrad guid
+                    //uppdatera eventuellt ändrad guid(ny url)
                     if(event[0].guid != item.guid) {
-                        await updateEvent(item.guid, event[0].contentid, event[0].eventtime, event[0].eventtime, event[0].eventtime, event[0].smartsignlink, event[0].published, event[0].id)
+                        let updateguid = await updateEvent(event[0].id, item.guid, event[0].contentid, event[0].eventtime, event[0].eventtime, event[0].eventtime, event[0].smartsignlink, event[0].published)
+                    }
+                    //uppdatera eventuellt ändrad eventtime
+                    if(event[0].eventtime != eventtime) {
+                        let updateeventtime = await updateEvent(event[0].id, item.guid, event[0].contentid, eventtime, eventtime, eventtime, event[0].smartsignlink, event[0].published)
                     }
                 }
             }
@@ -332,6 +336,16 @@ async function readEvents() {
     }
 }
 
+async function readEventsByDate(eventtime) {
+    try {
+        let result = await eventModel.readEventsByDate(eventtime)
+        return result
+    } catch (err) {
+        console.log(err.message)
+        return "error: " + err.message
+    }
+}
+
 async function readEventGuid(guid) {
     try {
         let result = await eventModel.readEventGuid(guid)
@@ -371,7 +385,7 @@ async function createEvent(guid, contentid, eventtime, pubstarttime = "none", pu
     }
 }
 
-async function updateEvent(guid, contentid, eventtime, pubstarttime = "none", pubendtime = "none", smartsignlink = "none", published = 0, published_as_image = 0, lang='en', id) {
+async function updateEvent(id, guid, contentid, eventtime, pubstarttime = "none", pubendtime = "none", smartsignlink = "none", published = 0, published_as_image = 0, lang='en') {
     try {
         let result = eventModel.updateEvent(guid, contentid, eventtime, pubstarttime, pubendtime, smartsignlink, published, published_as_image, lang, id)
         return result
@@ -982,7 +996,7 @@ async function savePageAsImage(events_id, html, imagefullpath, template) {
             height: 1920,
             deviceScaleFactor: 1,
         });
-        
+
         await page.goto(process.env.SERVERURL + 'smartsign/api/v1/calendar/event/' + events_id + '?template=' + template, { waitUntil: 'networkidle0' })
 
         await page.screenshot({ path: imagefullpath, quality: parseInt(100) });
@@ -1059,6 +1073,7 @@ module.exports = {
     slideshow,
     slideshowimages,
     readEvents,
+    readEventsByDate,
     readEventGuid,
     readEventContentid,
     readEventId,
