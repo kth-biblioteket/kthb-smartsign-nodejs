@@ -22,6 +22,7 @@ async function readEventsPaginated(req, res, next) {
     let feed_sv
     let parser = new Parser();
     let events
+    let eventsbydate
     let imagebank
     let page = 1
     let size = 10
@@ -58,8 +59,16 @@ async function readEventsPaginated(req, res, next) {
         res.send("error: " + err.message)
     }   
     
+    //Läs in alla events
     try {
         events = await readEvents()
+    } catch(err) {
+        res.send("error: " + err.message)
+    }
+
+    //läs in alla events med datum större än nu
+    try {
+        eventsbydate = await readEventsByDate(new Date())
     } catch(err) {
         res.send("error: " + err.message)
     }
@@ -67,7 +76,7 @@ async function readEventsPaginated(req, res, next) {
     data.pagination = {
         "page": page,
         "size": size,
-        "total": events.length
+        "total": eventsbydate.length
     }
 
     let contentid = ""
