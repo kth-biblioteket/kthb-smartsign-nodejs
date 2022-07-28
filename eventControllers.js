@@ -82,7 +82,11 @@ async function readEventsPaginated(req, res, next) {
     let contentid = ""
     try {
         for (const item of feed.items) {
+
             eventtime = substrInBetween(item.contentSnippet, "Time: ", "\nLocation:")
+            if (typeof eventtime === 'undefined') {
+                eventtime = substrInBetween(item.contentSnippet, "Time: ", "\nType of event:")
+            }
             eventtime = eventtime.substr(4, 10) + eventtime.substr(15, 6).replace('.', ':')
 
             //Har events starttid passerat?
